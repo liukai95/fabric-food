@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>食品供应链溯源信息系统</title>
+    <link rel="stylesheet" type="text/css" href="/css/trace.css">
+
+</head>
+<body>
+    <% include ../base.ejs %>
+    <div id="page-wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h3 class="page-header">安全性溯源</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="trace">
+                    	<div class="control">
+							<form class="form-inline">
+								<div class="form-group">
+									<select class="form-control" id="product_num">
+										<option value="">请选择发现安全问题的产品批次编码</option>
+										<% for(var i = 0;i < product.length;i++) { %>
+											<option value="<%=product[i].productid%>"><%=product[i].productid%></option>
+										<% } %>
+									</select>
+								</div>
+								<button type="submit" class="btn btn-default" id="run_trace">开始溯源</button>
+								<input type="reset" class="btn btn-default" id="reset" />
+								<div class="safe-rank-intro">
+									图例：风险程度随着
+									<span></span>
+									<span></span>
+									<span></span>颜色逐级增加。
+								</div>
+							</form>
+                    	</div>
+                    	<div class="maparea">
+	                    	<!-- <canvas id="canvas" width="1000" height="650">
+	                    		Your browser does not support the canvas element.
+	                    	</canvas> -->
+	                    	<div class="map"></div>
+	                    	<!-- <div class="circle-info">
+	                    		<div class="info-arrow"></div>
+	                    		<div class="info-content"></div>
+	                    	</div> -->
+                    	</div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="contextmenu">
+        	<ul>
+        		<h5>是否有问题</h5>
+        		<li><a href="javascript:;">有问题</a></li>
+        		<li><a href="javascript:;">没问题</a></li>
+        	</ul>
+        </div>
+    </div>
+<script type="text/javascript" src="/js/Circle.js"></script>
+
+<script type="text/javascript">
+
+	var product = document.querySelector("#product_num"),
+		trace = document.querySelector("#run_trace"),
+		reset = document.querySelector("#reset");
+
+	var productid = "";
+
+	reset.addEventListener('click', function() {
+		map.innerHTML = "";
+		Circle.prototype.init();
+		Circle.prototype.isSafeTrace = 0;
+		window.location.reload();
+	})
+
+	trace.addEventListener('click', function(e) {
+		e.preventDefault();
+		map.innerHTML = "";
+		Circle.prototype.init();
+
+		productid = product.value;
+
+		ajax('post', '/trace/trace', {
+			kind: 'product',
+			code: product.value
+		}, function(data) {
+			var json = JSON.parse(data);
+			console.log(json.data)
+			if(json.code == 1) {
+				json.data.forEach(function(item) {
+					for(var key in item) {
+						var elem = new Circle({
+							name: transformKey[key],
+							code: item[key]
+						});
+						elem.rank = 2;
+						elem.dom.style.background = safeRank[elem.rank];
+						elem.pool.push(elem)
+					}
+					Circle.prototype.addLine();
+				});
+				setTimeout(function() {
+					safetrace(json.data);
+				},30)
+			}
+		})
+	})
+
+	var map = document.querySelector(".map");
+	var menu = document.querySelector(".contextmenu");
+
+	// map.addEventListener('contextmenu', function(e) {
+	// 	e.preventDefault();
+
+	// 	if(e.target.className == 'circle') {
+	// 		menu.style.left = e.clientX + 'px';
+	// 		menu.style.top = e.clientY + 'px';
+	// 		menu.style.visibility = 'visible';
+	// 	}
+
+	// });
+
+	map.addEventListener('click', function(e) {
+		e.preventDefault();
+		Circle.prototype.showInfo(e)
+	});
+
+	document.addEventListener('click', function() {
+		menu.style.visibility = 'hidden';
+	})
+
+	function safetrace(lists) {
+		console.log(lists)
+		lists.forEach(function(list, index) {
+			ajax('get', '/api/getproductbyseed/' + list.seedid, {}, function(data) {
+				var data = JSON.parse(data);
+				// trace from seed
+				data.forEach(function(item) {
+					// item is a path traced from seed
+					if(item.productid != productid) {
+						var ans = prompt("通过该批次产品的源头种子批次编码：" + item.seedid + "，追踪到了尚未检测的\n产品批次：" + item.productid + "，\n为了帮助分析，请检测该批次产品是否也存在质量安全问题，然后根据检测结果以数字输入：\n\n 1：检测结果正常 2：检测发现质量安全问题")
+						if(ans == 1) {
+							console.log("没问题");
+							Circle.prototype.isSafeTrace = 1;
+							Circle.prototype.accumulate.x = 1150;
+							for(var key in item) {
+								var elem = new Circle({
+									name: transformKey[key],
+									code: item[key]
+								});
+								elem.rank = 1;
+								elem.dom.style.background = safeRank[elem.rank];
+								// elem.pool.push(elem)
+
+							}
+							Circle.prototype.addLine();
+							for(var key in item) {
+								var elem = Circle.prototype.pool.find(function(elem, index) {
+									if(elem.name == transformKey[key] && elem.code == item[key]) {
+										return true;
+									}
+								});
+								if(elem) {
+									// elem.rank = elem.rank - 1;
+									elem.dom.style.background = safeRank[elem.rank];
+								}
+							}
+
+						}else if(ans == 2) {
+							console.log("有问题");
+
+							Circle.prototype.isSafeTrace = 1;
+							Circle.prototype.accumulate.x = 1150;
+							for(var key in item) {
+								var elem = new Circle({
+									name: transformKey[key],
+									code: item[key]
+								});
+								elem.rank = 2;
+								
+								elem.dom.style.background = safeRank[elem.rank];
+								// elem.pool.push(elem)
+							}
+							Circle.prototype.addLine();
+
+							for(var key in item) {
+								var elem = Circle.prototype.pool.find(function(elem, index) {
+									if(elem.name == transformKey[key] && elem.code == item[key]) {
+										return true;
+									}
+								});
+								if(elem) {
+									console.log(item);
+									elem.rank = elem.rank + 1;
+									elem.dom.style.background = safeRank[elem.rank];
+								}
+							}
+						}else {
+							console.log("不知道")
+						}
+					}
+				})
+			})
+		})
+	}
+</script>
+
+</body>
+</html>

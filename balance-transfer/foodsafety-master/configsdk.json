@@ -1,0 +1,15 @@
+{
+   "host":"localhost",
+   "port":"3000",
+   "jwt_expiretime": "66000",
+   "channelName":"mychannel",
+   "CC_SRC_PATH":"../../food_cli",
+   "keyValueStore":"/tmp/fabric-client-kvs",
+   "eventWaitTime":"60000",
+   "admins":[
+      {
+         "username":"admin",
+         "secret":"adminpw"
+      }
+   ]
+}

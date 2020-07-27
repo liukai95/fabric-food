@@ -1,0 +1,16 @@
+#page-wrapper .add{
+    width: 5%;
+    height: 30px;
+    font-size: 1.2em;
+    color: #fff;
+    background: #337AB7;
+    float: right;
+    text-align: center;
+    line-height: 30px;
+    border-radius: 5px;
+}
+#page-wrapper .add:hover{
+    background: #23527C;
+    text-decoration: none;
+}
+        

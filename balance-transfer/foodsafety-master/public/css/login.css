@@ -1,0 +1,31 @@
+#{
+	margin: 0;
+	padding: 0;
+	font-family: "微软雅黑";
+	font-size: 12px;
+}
+#wrapper{
+	background: #DCDCDC;
+	width: 100%;
+	height: 900px;
+}
+#wrapper #main{
+	width: 20%;
+	height: 30%;
+	margin: 0 auto;
+	padding-top: 15%;
+}
+#wrapper #main form input.name,.passwd{
+	width: 50%;
+	height: 30px;
+	
+}
+#wrapper #main form input.submit{
+	height: 40px;
+	width: 190px;
+	margin-top: 10px;
+	text-align: center;
+	font-size: 1.6em;
+	color: #fff;
+	background: #87CEFA;
+}

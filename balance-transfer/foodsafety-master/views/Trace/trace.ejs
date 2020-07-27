@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>食品供应链溯源信息系统</title>
+    <link rel="stylesheet" type="text/css" href="/css/trace.css">
+    <style type="text/css">
+	    .map {
+	    	width: 100%;
+	    }
+    	.circle {
+    		width: 80px;
+    		height: 80px;
+    		line-height: 80px;
+    	}
+    </style>
+</head>
+<body>
+    <% include ../base.ejs %>
+    <div id="page-wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h3 class="page-header">真实性溯源</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="trace">
+                    	<div class="control">
+							<form class="form-inline">
+								<div class="form-group">
+									<select class="form-control" id="seed_num">
+										<option value="">请选择种子编号</option>
+										<% for(var i = 0;i < seed.length;i++) { %>
+											<option value="<%=seed[i].seedid%>"><%=seed[i].seedid%></option>
+										<% } %>
+									</select>
+								</div>
+								<div class="form-group">
+									<select class="form-control" id="product_num">
+										<option value="">请选择产品编号</option>
+										<% for(var i = 0;i < product.length;i++) { %>
+											<option value="<%=product[i].productid%>"><%=product[i].productid%></option>
+										<% } %>
+									</select>
+								</div>
+								<button type="submit" class="btn btn-default" id="run_trace">开始溯源</button>
+								<input type="reset" class="btn btn-default" id="reset" />
+							</form>
+                    	</div>
+                    	<div class="maparea">
+	                    	<!-- <canvas id="canvas" width="1000" height="650">
+	                    		Your browser does not support the canvas element.
+	                    	</canvas> -->
+	                    	<div class="map"></div>
+	                    	<!-- <div class="circle-info">
+	                    		<div class="info-arrow"></div>
+	                    		<div class="info-content"></div>
+	                    	</div> -->
+                    	</div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="contextmenu">
+        	<ul>
+        		<h5>是否有问题</h5>
+        		<li><a href="javascript:;">有问题</a></li>
+        		<li><a href="javascript:;">没问题</a></li>
+        	</ul>
+        </div>
+        
+    </div>
+<script type="text/javascript" src="/js/Circle.js"></script>
+<script type="text/javascript">
+	
+	var product = document.querySelector("#product_num"),
+		seed = document.querySelector("#seed_num"),
+		trace = document.querySelector("#run_trace"),
+		reset = document.querySelector("#reset");
+
+
+	reset.addEventListener('click', function() {
+		map.innerHTML = "";
+		confirm.innerHTML = "";
+		Circle.prototype.init();
+		window.location.reload();
+	})
+
+	trace.addEventListener('click', function(e) {
+		e.preventDefault();
+		map.innerHTML = "";
+		Circle.prototype.init();
+
+		ajax('post', '/trace/trace', {
+			kind: seed.value != "" ? 'seed' : 'product',
+			code: seed.value != "" ? seed.value : product.value
+		}, function(data) {
+			var json = JSON.parse(data);
+			console.log(json.data)
+			if(json.code == 1) {
+				json.data.map(function(item) {
+					for(var key in item) {
+						var elem = new Circle({
+							name: transformKey[key],
+							code: item[key]
+						});
+						elem.pool.push(elem)
+					}
+					Circle.prototype.addLine();
+				});
+				// new Path(pool[0], pool[1])
+			}
+		})
+	})
+
+	var map = document.querySelector(".map");
+	var menu = document.querySelector(".contextmenu");
+
+	// map.addEventListener('contextmenu', function(e) {
+	// 	e.preventDefault();
+
+	// 	console.log(e.target)
+	// 	if(e.target.className == 'circle') {
+	// 		menu.style.left = e.clientX + 'px';
+	// 		menu.style.top = e.clientY + 'px';
+	// 		menu.style.visibility = 'visible';
+	// 	}
+	// });
+
+	map.addEventListener('click', function(e) {
+		e.preventDefault();
+		Circle.prototype.showInfo(e)
+	});
+
+	document.addEventListener('click', function() {
+		menu.style.visibility = 'hidden';
+	});
+</script>
+
+
+
+</body>
+</html>

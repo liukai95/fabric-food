@@ -1,0 +1,165 @@
+.trace {
+	width: 100%;
+	height: 700px;
+	/*float: left;*/
+	color: red;
+	overflow: hidden;
+}
+
+.control {
+	height: 55px;
+	padding: 10px;
+	box-sizing: border-box;
+	border-bottom: 1px solid #e0e0e0;
+}
+.maparea {
+	height: calc(100% - 55px);
+	position: relative;
+}
+.map {
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+	position: relative;
+	box-sizing: border-box;
+	float: left;
+	top: 0;
+}
+/*.map-side {
+	width: 20%;
+	height: 100%; 
+	border-left: 1px solid #aaa;
+	box-sizing: border-box;
+	position: relative;
+	float: left;
+}*/
+.circle {
+	width: 80px;
+	height: 80px;
+	border-radius: 50%;
+	border: 1px solid #666;
+	position: absolute;
+	color: black;
+	text-align: center;
+	line-height: 80px;
+	cursor: pointer;
+    z-index: 10;
+}
+
+@keyframes showinfo {
+	from {transform: scale(0)}
+	to {transform: scale(1)}
+}
+.circle-info {
+    min-width: 200px;
+    max-width: 400px;
+    min-height: 230px;
+    max-height: 400px;    
+    position: absolute;
+    top: 0;
+    left: 0;
+    visibility: hidden;
+    z-index: 100;
+    animation: showinfo 0.3s;
+    transform-origin: 0 0;
+}
+.info-arrow {
+    width: 30px;
+    height: 30px;
+    border-bottom: 15px solid #EEEEFF;
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-top: 15px solid transparent;
+    position: relative;
+    left: 30px;
+    top: 0px;
+}
+.info-content {
+	height: auto;
+	width: 100%;
+    background: #EEEEFF;
+    /*border: 1px solid #ccc;*/
+    border-radius: 3px;
+    padding: 10px;
+    overflow: auto;
+}
+.info-content li {
+	color: #333;
+	list-style-type: none;
+	width: 100%;
+}
+
+.path {
+	height: 10px;
+    /*width: 100px;*/
+	background-image: url('../images/arrow.png');
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+	position: absolute;
+    z-index: 5;
+}
+.contextmenu {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100px;
+	height: 90px;
+	border: 1px solid #ccc;
+	border-radius: 3px;
+	background: #f0f0f0;
+	visibility: hidden;
+    z-index: 100;
+}
+.contextmenu h5 {
+	margin: 0;
+	line-height: 30px;
+	border-bottom: 1px solid #ccc;
+	margin-bottom: 2px;
+}
+.contextmenu ul {
+	padding: 0;
+	color: #333;
+	text-align: center;
+}
+.contextmenu ul li {
+	width: 100%;
+	height: 28px;
+	line-height: 28px;
+	list-style-type: none;
+}
+.contextmenu ul li a {
+	display: inline-block;
+	width: 100%;
+	height: 100%;
+}
+
+
+.safe-rank-intro {
+	width: 500px;
+	height: 30px;
+	line-height: 30px;
+	display: inline-block;
+	vertical-align: middle;
+	margin-left: 20px;
+	font-size: 18px;
+	color: #333;
+}
+.safe-rank-intro span {
+	width: 25px;
+	height: 25px;
+	display: inline-block;
+	margin-right: 10px;
+	/*vertical-align: middle;*/
+	text-indent: 35px;
+	font-size: 18px;	
+	/*float: left;*/
+}
+.safe-rank-intro span:nth-child(1) {
+	background: green;
+}
+.safe-rank-intro span:nth-child(2) {
+	background: yellow;
+}
+.safe-rank-intro span:nth-child(3) {
+	background: red;
+}
