@@ -10,7 +10,7 @@
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.3",
     "ejs": "^2.5.7",
-    "express": "~4.15.2",
+    "express": "~4.17.3",
     "express-session": "^1.15.5",
     "morgan": "~1.8.1",
     "mysql": "^2.14.1",
